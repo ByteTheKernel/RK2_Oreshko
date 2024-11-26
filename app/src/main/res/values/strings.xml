@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">RK_2</string>
+    <string name="retry">Retry</string>
+    <string name="load_more">Load More</string>
+    <string name="loading">Loading…</string>
+    <string name="error_loading_more_items">Error loading more items</string>
+</resources>

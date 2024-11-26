@@ -28,20 +28,26 @@ class GiphyViewModel(private val repository: GiphyRepository) : ViewModel() {
     private val _gifs = MutableStateFlow<List<GifData>>(emptyList())
     val gifs: StateFlow<List<GifData>> get() = _gifs
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> get() = _isLoading
+
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> get() = _errorMessage
+
     private var currentPage = 0
-    var isLoading = false
+    private var isLoadingMore = false
 
-    // Новый метод для поиска по запросу
     fun searchGifs(query: String) {
-        if (isLoading) return
+        if (_isLoading.value) return
 
-        isLoading = true
+        _isLoading.value = true
         currentPage = 0  // Сбрасываем страницу для нового запроса
+        _errorMessage.value = null  // Сбрасываем предыдущее сообщение об ошибке
         viewModelScope.launch {
             try {
                 Log.d("GiphyViewModel", "Request URL: ${RetrofitClient.BASE_URL}v1/gifs/search")
                 // Используем асинхронную версию без execute()
-                val response = repository.searchGifs(query, 20, currentPage * 20)
+                val response = repository.searchGifs(query, 25, currentPage * 20)
 
                 if (response.isSuccessful) {
                     val newGifs = response.body()?.data ?: emptyList()
@@ -50,20 +56,24 @@ class GiphyViewModel(private val repository: GiphyRepository) : ViewModel() {
                     Log.d("GiphyViewModel", "GIFs loaded successfully")
                 } else {
                     Log.e("GiphyViewModel", "Response error: ${response.code()} - ${response.message()}")
+                    _errorMessage.value = "Ошибка при загрузке данных"
                 }
             } catch (e: Exception) {
                 Log.e("GiphyViewModel", "Error during API request: ${e.message}", e)
+                _errorMessage.value = "Ошибка соединения или превышен лимит запросов"
             } finally {
-                isLoading = false
+                _isLoading.value = false
             }
         }
     }
 
 
     fun loadMoreImages() {
-        if (isLoading) return
+        if (_isLoading.value || isLoadingMore) return
 
-        isLoading = true
+        isLoadingMore = true
+        _errorMessage.value = null  // Сбрасываем предыдущее сообщение об ошибке
+
         viewModelScope.launch {
             try {
                 val response = repository.searchGifs("nba", 20, currentPage * 20) // Используем правильный запрос
@@ -71,13 +81,25 @@ class GiphyViewModel(private val repository: GiphyRepository) : ViewModel() {
                     val newGifs = response.body()?.data ?: emptyList()
                     _gifs.value += newGifs  // Добавляем новые GIF в список
                     currentPage++
+                } else {
+                    _errorMessage.value = "Ошибка при загрузке дополнительных данных"
                 }
             } catch (e: Exception) {
                 Log.e("GiphyViewModel", "Error during API request: ${e.message}", e)
+                _errorMessage.value = "Ошибка соединения или превышен лимит запросов"
             } finally {
-                isLoading = false
+                isLoadingMore = false
             }
         }
+    }
+
+    // Функция для повторной попытки загрузки
+    fun retryLoading() {
+        searchGifs("default") // Например, повторить с запросом по умолчанию
+    }
+
+    fun retryLoadingMore() {
+        loadMoreImages() // Повторить догрузку данных
     }
 
 }

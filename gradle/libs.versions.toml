@@ -1,10 +1,12 @@
 [versions]
 accompanistFlowlayout = "<version>"
 agp = "8.7.2"
-coilGif = "2.0.0"
+coilGif = "2.4.0"
+googleAccompanistFlowlayout = "0.31.3-beta"
 kotlin = "1.9.0"
 compose_ui = "1.7.5"
 compose_material = "1.7.5"
+lazystaggeredgridVersion = "1.0.0"
 lifecycleViewmodelCompose = "2.6.0"
 room = "2.6.1"
 coil = "2.4.0"
@@ -21,6 +23,7 @@ uiToolingPreviewAndroid = "1.7.5"
 
 [libraries]
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version= "0.32.0" }
+accompanist-flowlayout-v0313beta = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "googleAccompanistFlowlayout" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle = {group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version = "2.8.7"}
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }

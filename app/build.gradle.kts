@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.compose.material)
     implementation(libs.accompanist.flowlayout)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation (libs.accompanist.flowlayout.v0313beta)
 
     // Coil (для загрузки изображений)
     implementation(libs.coil.compose)

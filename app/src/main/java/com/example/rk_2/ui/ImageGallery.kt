@@ -1,5 +1,6 @@
 package com.example.rk_2.ui
 
+import android.content.Intent
 import android.util.Log
 import android.widget.ImageView
 import androidx.compose.foundation.Image
@@ -7,6 +8,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import com.google.accompanist.flowlayout.FlowRow
 import com.example.rk_2.data.model.GifData
 import androidx.compose.foundation.layout.*
@@ -37,6 +39,7 @@ import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import coil.size.Scale
 import com.example.rk_2.R
+import com.example.rk_2.SecondActivity
 
 
 @Composable
@@ -52,6 +55,12 @@ fun GifCard(gif: GifData) {
 
     Box(
         modifier = Modifier
+            .clickable {
+
+                val intent = Intent(context, SecondActivity::class.java)
+                intent.putExtra("URL", gif.images.original.url )
+                context.startActivity(intent)
+            }
             .padding(8.dp)
             .fillMaxWidth()
             .aspectRatio(
@@ -280,6 +289,26 @@ fun PaginationErrorItem(
             Text("Повторить")
         }
     }
+}
+
+@Composable
+fun OneGif(gif_url: String){
+    val context = LocalContext.current
+    val painter = rememberAsyncImagePainter(
+        model = ImageRequest.Builder(context)
+            .data(gif_url)
+            .decoderFactory(GifDecoder.Factory()) // Указывает использовать декодер для GIF
+            .build()
+    )
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Image(
+            painter = painter,
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+    }
+
 }
 
 
